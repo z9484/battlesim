@@ -40,7 +40,7 @@ class Game
 
       @screen = Rubygame::Screen.set_mode [320,240] 
       @screen.title = 'Battle Sim'
-      @screen.fill [0,0,255]
+      @screen.fill [0,0,0]
       @screen.update
 			@mainState = MainMenu.new(@screen, @tiles)
      
@@ -66,6 +66,7 @@ class Game
 			@mainState.update()
 			
 			# Refresh the screen
+			@screen.fill [0,0,0]
 			@mainState.draw()
 			#@screen.update
 		 

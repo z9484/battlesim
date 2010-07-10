@@ -35,19 +35,27 @@ class MainMenu < State
 	end
 
 	def player_left
-		@player1.moveLeft()
+		if @map[@player1.posX - 1][@player1.posY] != "#"
+			@player1.moveLeft()
+		end
 	end 
 
 	def player_right
-		@player1.moveRight()
+		if @map[@player1.posX + 1][@player1.posY] != "#"
+			@player1.moveRight()
+		end
 	end
 	 
 	def player_up
-		@player1.moveUp()
+		if @map[@player1.posX][@player1.posY - 1] != "#"
+			@player1.moveUp()
+		end
 	end
 
 	def player_down
-		@player1.moveDown()
+		if @map[@player1.posX][@player1.posY + 1] != "#"
+			@player1.moveDown()
+		end
 	end
 
 end

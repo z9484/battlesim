@@ -23,15 +23,21 @@ include CharMod
  
 TILESIZE = 32
 
-# Initialize Rubygame, and clean up when script exits.
-Rubygame.init
-at_exit { Rubygame.quit }
- 
+class MyHandler
+  include Rubygame::EventHandler::HasEventHandler
+
+	def exit_script
+		exit
+	end
+
+end
 
 class Game 
 
   ## Load Content ##
   def initialize()
+		Rubygame.init
+		at_exit { Rubygame.quit }
     this_dir = File.dirname( File.expand_path(__FILE__) )
     Surface.autoload_dirs << File.join(this_dir, "gfx")
 
@@ -55,6 +61,18 @@ class Game
       exit
       puts "Failed to load data"
     end
+
+		@handler = MyHandler.new
+		@handler.make_magic_hooks( :q            => :exit_script,
+				                      :escape       => :exit_script,
+				                      :mouse_right  => :exit_script,
+				                      :left         => :player_left,
+				                      :right        => :player_right,
+				                      :up           => :player_up,
+				                      :down         => :player_down,
+				                      QuitRequested => :exit_script )
+ 
+
   end
 
   def Update()
@@ -73,26 +91,31 @@ class Game
     @tiles["@"].blit( @screen, [2*TILESIZE,2*TILESIZE] )
   end
 
-  attr_reader :screen
+	def run()
+		loop do
+		 
+			# Fetch the user input events from SDL.
+			events = Rubygame::Events.fetch_sdl_events
+		 
+			# Pass each input to the event handler to check.
+			events.each do |event|
+				@handler.handle( event )
+			end
+		 
+			#game.Update()
+			# Refresh the screen
+			Draw()
+			@screen.update
+		 
+			# Pause for a while before checking for more events.
+			sleep 0.1
+		 
+		end
+
+	end
 end
  
-class MyHandler
-  include Rubygame::EventHandler::HasEventHandler
-end
- 
-handler = MyHandler.new
-handler.make_magic_hooks( :q            => :exit_script,
-                          :escape       => :exit_script,
-                          :mouse_right  => :exit_script,
-                          :left         => :player_left,
-                          :right        => :player_right,
-                          :up           => :player_up,
-                          :down         => :player_down,
-                          QuitRequested => :exit_script )
- 
-def exit_script
-  exit
-end
+
  
 def player_left
   exit
@@ -112,25 +135,7 @@ end
 
 game = Game.new()
 player1 = Character.new()
-
+game.run()
 #LoadContent()
 
-loop do
- 
-  # Fetch the user input events from SDL.
-  events = Rubygame::Events.fetch_sdl_events
- 
-  # Pass each input to the event handler to check.
-  events.each do |event|
-    handler.handle( event )
-  end
- 
-  #game.Update()
-  # Refresh the screen
-  game.Draw()
-  game.screen.update
- 
-  # Pause for a while before checking for more events.
-  sleep 0.1
- 
-end
+
