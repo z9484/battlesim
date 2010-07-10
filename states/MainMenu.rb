@@ -1,24 +1,39 @@
 require 'character.rb'
+COOLTIME = 0.05
 
 class MainMenu < State
 	def initialize(screen, content)
 		super(screen, content)
 
 		@player1 = Character.new()
+		@cooldown = COOLTIME
+		@map = loadMap("maps/t1.map")
 
-		@map = loadMap("maps/t1.map") 
-		make_magic_hooks( :q            => :exit_script,
-                      :escape       => :exit_script,
-                      :mouse_right  => :exit_script,
-                      :left         => :player_left,
-                      :right        => :player_right,
-                      :up           => :player_up,
-                      :down         => :player_down,
+		make_magic_hooks(
+											KeyPressed => :key_pressed,
+											KeyReleased => :key_released,
+											ClockTicked => :update_clock,
                       QuitRequested => :exit_script )
 	end
 
+	def key_pressed(event)
+		if event.key == :left
+			player_left
+		elsif event.key == :right
+			player_right
+		elsif event.key == :up
+			player_up
+		elsif event.key == :down
+			player_down
+		elsif event.key == :q or event.key == :escape
+			exit_script()
+		end
+	end
+
+	def key_released(event)
+	end
+
 	def draw()
-    #@screen.update
 
     for y in 0..5
       for x in 0..4
@@ -27,7 +42,6 @@ class MainMenu < State
     end
 
     @graphics["@"].blit( @screen, [@player1.posX*TILESIZE, @player1.posY*TILESIZE] )
-		@screen.update
 	end
 
 	def exit_script()
@@ -55,6 +69,21 @@ class MainMenu < State
 	def player_down
 		if @map[@player1.posX][@player1.posY + 1] != "#"
 			@player1.moveDown()
+		end
+	end
+
+	def update_clock(event)
+		#@last_update_time = event.seconds
+		@cooldown -= event.seconds
+	end
+
+	def check_cool
+		puts @cooldown
+		if @cooldown <= 0
+			@cooldown = COOLTIME
+			return true
+		else
+			return false
 		end
 	end
 

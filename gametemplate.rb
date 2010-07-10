@@ -22,6 +22,7 @@ class Game
   def initialize()
 		Rubygame.init
 		at_exit { Rubygame.quit }
+		make_clock
 
     this_dir = File.dirname( File.expand_path(__FILE__) )
     Surface.autoload_dirs << File.join(this_dir, "gfx")
@@ -63,20 +64,25 @@ class Game
 		loop do
 		 
 			#game.Update()
-			@mainState.update()
+			@mainState.update(@clock)
 			
 			# Refresh the screen
-			@screen.fill [0,0,0]
+			@screen.fill(:black)
 			@mainState.draw()
-			#@screen.update
+			@screen.update
 		 
 			# Pause for a while before checking for more events.
-			sleep 0.1
+			#sleep 0.1
 		 
 		end
 	end
 
-
+  def make_clock
+    @clock = Clock.new()
+    @clock.target_framerate = 60
+    @clock.calibrate
+    @clock.enable_tick_events
+  end
 
 end
  
