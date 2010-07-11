@@ -1,5 +1,5 @@
 require 'character.rb'
-COOLTIME = 0.05
+COOLTIME = 0.1
 
 class MainMenu < State
 	def initialize(screen, content)
@@ -7,30 +7,10 @@ class MainMenu < State
 
 		@player1 = Character.new()
 		@cooldown = COOLTIME
+		@last_update_time  = 0
 		@map = loadMap("maps/t1.map")
 
-		make_magic_hooks(
-											KeyPressed => :key_pressed,
-											KeyReleased => :key_released,
-											ClockTicked => :update_clock,
-                      QuitRequested => :exit_script )
-	end
 
-	def key_pressed(event)
-		if event.key == :left
-			player_left
-		elsif event.key == :right
-			player_right
-		elsif event.key == :up
-			player_up
-		elsif event.key == :down
-			player_down
-		elsif event.key == :q or event.key == :escape
-			exit_script()
-		end
-	end
-
-	def key_released(event)
 	end
 
 	def draw()
@@ -73,17 +53,43 @@ class MainMenu < State
 	end
 
 	def update_clock(event)
-		#@last_update_time = event.seconds
-		@cooldown -= event.seconds
+		@last_update_time = event.seconds
+		#@cooldown -= event.seconds
+
+ 		@keys.each do |key|
+			input(key) if check_cool
+    end
+		
 	end
 
+
 	def check_cool
-		puts @cooldown
+		
 		if @cooldown <= 0
 			@cooldown = COOLTIME
 			return true
 		else
+			@cooldown -= @last_update_time
 			return false
+		end
+	end
+
+	#def key_released( event )
+		#super(event)
+		#input(event.key)
+	#end
+
+	def input(key)
+    if key == :left
+			player_left
+		elsif key == :right
+			player_right
+		elsif key == :up
+			player_up
+		elsif key == :down
+			player_down
+		elsif key == :q or key == :escape
+			exit_script
 		end
 	end
 

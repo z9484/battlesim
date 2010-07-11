@@ -52,28 +52,26 @@ class Game
 
   end
 
-  def Update()
+  def update()
+		@mainState.update(@clock)
   end
 
   ## Draw ##
-  def Draw()
+  def draw()
+			# Refresh the screen
+			@screen.fill(:black)
 
+			@mainState.draw()
+			@screen.update
   end
 
 	def run()
 		loop do
 		 
-			#game.Update()
-			@mainState.update(@clock)
-			
-			# Refresh the screen
-			@screen.fill(:black)
-			@mainState.draw()
-			@screen.update
-		 
-			# Pause for a while before checking for more events.
-			#sleep 0.1
-		 
+			update()
+
+			draw()
+
 		end
 	end
 
@@ -85,14 +83,9 @@ class Game
   end
 
 end
- 
-
- 
-
 
 game = Game.new()
 player1 = Character.new()
 game.run()
-#LoadContent()
 
 
