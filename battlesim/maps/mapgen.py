@@ -28,7 +28,7 @@ def generatemap():
         map1[i][numX-1] = "#"
 
 
-    #add cap
+    #add capital
     
     row = random.randint(5,numY-7)
     col = random.randint(5,numX-7)
@@ -36,6 +36,10 @@ def generatemap():
     
     #[row][col]
     map1[capital.y][capital.x] = "d"
+    map1[capital.y][capital.x+1] = "d"
+    map1[capital.y+1][capital.x] = "d"
+    map1[capital.y+1][capital.x+1] = "d"
+    #map1[capital.y+2][capital.x+1] = "d"
  
     for row in map1:    
         print row
